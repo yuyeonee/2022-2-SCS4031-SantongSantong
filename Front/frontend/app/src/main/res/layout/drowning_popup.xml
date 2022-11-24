@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#eeeeee"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:layout_width="300dp">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <TextView
+            android:id="@+id/title"
+            android:text="익수자 발견!"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:textColor="#fff"
+            android:background="#999999"
+            android:layout_width="match_parent"
+            android:layout_height="53sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:padding="24dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/detect_drowning"
+            android:textSize="15sp"
+            android:textColor="#000"
+            android:text="구역 익수자 발견. 빠른 구조 바람."
+            android:gravity="center"
+            android:layout_marginBottom="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/drowning_photo"
+            tools:srcCompat="@tools:sample/avatars"
+            android:gravity="center"/>
+    </LinearLayout>
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn1"
+            android:text="구조"
+            android:textSize="20sp"
+            android:onClick="resuque"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn2"
+            android:text="지원 요청"
+            android:textSize="20sp"
+            android:onClick="support"/>
+    </LinearLayout>
+</LinearLayout>
