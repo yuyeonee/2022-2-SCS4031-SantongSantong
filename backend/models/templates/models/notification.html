@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Notification</title>
+</head>
+
+<body>
+  <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+  <input id="chat-message-input" type="text" size="100"><br>
+  <input id="chat-message-submit" type="button" value="Send">
+  {{ area_name|json_script:"area-name" }}
+  <script type="module">
+    const areaName = JSON.parse(document.getElementById('area-name').textContent);
+    const socket = new WebSocket(
+      "ws://"
+      + window.location.host
+      + "/ws/models/"
+      + areaName
+      + "/"
+    );
+
+    socket.onopen = function (e) {
+      console.log('서버와 연결되었습니다.')
+    }
+
+    // export default {
+    //   name: "DashBoardAlarmCard",
+    //   props: {
+    //     alarmList: Array
+    //   },
+    //   methods: {
+    //     createWebSocket() {
+    //       socket.onopen = function (e) {
+    //         console.log('서버와 연결되었습니다.')
+    //       };
+    //     },
+    //   },
+    //   created() {
+    //     this.createWebSocket()
+    //   }
+    // }
+  </script>
+</body>
+
+</html>
