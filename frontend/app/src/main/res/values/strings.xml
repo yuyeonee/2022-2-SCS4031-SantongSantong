@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">frontend</string>
+
+    <string-array name="area">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+    </string-array>
+</resources>

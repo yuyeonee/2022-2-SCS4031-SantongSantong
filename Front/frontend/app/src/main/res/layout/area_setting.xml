@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SAActivity">
+    tools:context=".SAActivity"
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/sa_title"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layotu_marginTop="50dp"
+        android:layout_marginTop="50dp"
         android:background="#FAED7D"
         android:text="근무지설정"
         android:gravity="center"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent "/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <ListView
         android:id="@+id/sa_view"
@@ -25,10 +26,9 @@
         android:layout_marginStart="50dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="50dp"
-        android:layout_marinBotton="10dp"
-        app:layout_constraintEnd_toEndOf="parrent"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sa_title"
-        android:background="#dedede"/>
+        app:layout_constraintTop_toBottomOf="@+id/sa_title" />
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+</LinearLayout>

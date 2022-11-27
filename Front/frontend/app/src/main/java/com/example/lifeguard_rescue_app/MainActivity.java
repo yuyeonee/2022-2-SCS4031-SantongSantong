@@ -2,13 +2,11 @@ package com.example.lifeguard_rescue_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -32,23 +30,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button.OnClickListener btnListener = new View.OnClickListener(){
-            public void onClick(View v){
-                switch(v.getId()){
-                    case R.id.set_area:
+        Button.OnClickListener btnListener = v -> {
+            switch(v.getId()){
+                case R.id.set_area:
 
-                        Intent setting = new Intent(MainActivity.this, DPActivity.class);
-                        startActivity(setting);
+                    Intent setting = new Intent(MainActivity.this, SAActivity.class);
+                    startActivity(setting);
 
-                        break;
-                }
+                    break;
             }
         };
 
         set_area = (Button)findViewById(R.id.set_area);
         set_area.setOnClickListener(btnListener);
-
-        detect_drowning = (TextView) findViewById((R.id.detect_drowning);
 
         String url = "http://google.com";
 
@@ -85,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
             /**
              * 1. StringBuffer에 파라미터 연결
-             * */
+             **/
             // 보낼 데이터가 없으면 파라미터를 비운다.
             if (_params == null)
                 sbParams.append("");
