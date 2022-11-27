@@ -30,10 +30,12 @@ public class DPActivity extends AppCompatActivity {
 
     // 구조 버튼 클릭
     public void mRsc(View v){
+
         finish();
     }
     // 지원 요청 버튼 클릭
     public void mSpt(View v){
+
         finish();
     }
 
@@ -46,6 +48,7 @@ public class DPActivity extends AppCompatActivity {
         return  true;
     }
     public void onBackPressed(){
+
         return;
     }
 

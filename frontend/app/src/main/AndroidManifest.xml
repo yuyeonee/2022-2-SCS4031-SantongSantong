@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- 네트워크 사용에 대한 퍼미션 -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 인터넷 권한 설정 -->
+    <uses-permission android:name="android:permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -13,7 +13,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Lifeguard_rescue_app"
+        android:theme="@style/Theme.Frontend"
         tools:targetApi="31">
 
         <activity
@@ -30,22 +30,9 @@
                 android:value="" />
         </activity>
 
-        <activity
-            android:name=".DPActivity"
-            android:theme="@style/popupTheme" android:screenOrientation="portrait">
-        </activity>
+        <activity android:name=".PopupActivity"
+            android:theme="@style/Popuptheme"/>
 
-        <activity android:name=".SAActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-
-
-
-    </application>
+</application>
 
 </manifest>
