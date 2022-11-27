@@ -3,6 +3,7 @@
 
 Some codes are based on https://github.com/facebookresearch/SlowFast
 """
+import os
 import pafy
 import datetime
 import argparse
@@ -13,6 +14,12 @@ import queue
 import threading
 import time
 from abc import ABCMeta, abstractmethod
+
+import sys
+sys.path.append("C:/Users/award/Desktop/workspace/2022-2-SCS4031-SantongSantong/backend/")
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
+django.setup()
 
 import cv2
 import mmcv

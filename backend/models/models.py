@@ -1,8 +1,8 @@
 from django.db import models
-import os
+import datetime
 
 # Create your models here.
 class Notification(models.Model):
-    id = models.IntegerField
-    pub_date = models.DateTimeField
+    area_id = models.IntegerField(default = 1)
+    pub_date = models.DateTimeField('date published', default = datetime.datetime.now)
     image = models.ImageField(blank=True, null=True)
