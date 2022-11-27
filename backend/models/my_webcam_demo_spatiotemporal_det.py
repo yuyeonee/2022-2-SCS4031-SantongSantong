@@ -26,100 +26,111 @@ from mmaction.models import build_detector
 try:
     from mmdet.apis import inference_detector, init_detector
 except (ImportError, ModuleNotFoundError):
-    raise ImportError('Failed to import `inference_detector` and '
-                      '`init_detector` form `mmdet.apis`. These apis are '
-                      'required in this demo! ')
+    raise ImportError(
+        "Failed to import `inference_detector` and "
+        "`init_detector` form `mmdet.apis`. These apis are "
+        "required in this demo! "
+    )
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-url ='https://www.youtube.com/watch?v=bPNg0cPvTDw'
+url = "https://www.youtube.com/watch?v=bPNg0cPvTDw"
 video = pafy.new(url)
-best = video.getbest(preftype='mp4')
+best = video.getbest(preftype="mp4")
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description='MMAction2 webcam spatio-temporal detection demo')
+        description="MMAction2 webcam spatio-temporal detection demo"
+    )
 
     parser.add_argument(
-        '--config',
-        default=('stdet_model/my_slowfast_kinetics_pretrained_r50_4x16x1_200e_ava.py'),
-        help='spatio temporal detection config file path')
+        "--config",
+        default=("stdet_model/my_slowfast_kinetics_pretrained_r50_4x16x1_200e_ava.py"),
+        help="spatio temporal detection config file path",
+    )
     parser.add_argument(
-        '--checkpoint',
-        default=('stdet_model/my_stdet.pth'),
-        help='spatio temporal detection checkpoint file/url')
+        "--checkpoint",
+        default=("stdet_model/my_stdet.pth"),
+        help="spatio temporal detection checkpoint file/url",
+    )
     parser.add_argument(
-        '--action-score-thr',
+        "--action-score-thr",
         type=float,
         default=0.9,
-        help='the threshold of human action score')
+        help="the threshold of human action score",
+    )
     parser.add_argument(
-        '--det-config',
-        default='stdet_model/my_faster_rcnn_r50_fpn_2x_coco.py',
-        help='human detection config file path (from mmdet)')
+        "--det-config",
+        default="stdet_model/my_faster_rcnn_r50_fpn_2x_coco.py",
+        help="human detection config file path (from mmdet)",
+    )
     parser.add_argument(
-        '--det-checkpoint',
-        default=('stdet_model/my_mmdet.pth'),
-        help='human detection checkpoint file/url')
+        "--det-checkpoint",
+        default=("stdet_model/my_mmdet.pth"),
+        help="human detection checkpoint file/url",
+    )
     parser.add_argument(
-        '--det-score-thr',
+        "--det-score-thr",
         type=float,
         default=0.8,
-        help='the threshold of human detection score')
+        help="the threshold of human detection score",
+    )
     parser.add_argument(
-        '--input-video',
+        "--input-video",
         default=best.url,
         type=str,
-        help='webcam id or input video file/url')
+        help="webcam id or input video file/url",
+    )
     parser.add_argument(
-        '--label-map',
-        default='stdet_model/label_map.txt',
-        help='label map file')
+        "--label-map", default="stdet_model/label_map.txt", help="label map file"
+    )
     parser.add_argument(
-        '--device', type=str, default='cuda:0', help='CPU/CUDA device option')
+        "--device", type=str, default="cuda:0", help="CPU/CUDA device option"
+    )
     parser.add_argument(
-        '--output-fps',
-        default=15,
-        type=int,
-        help='the fps of demo video output')
+        "--output-fps", default=15, type=int, help="the fps of demo video output"
+    )
     parser.add_argument(
-        '--out-filename',
-        default='demo/stdet/output.mp4',
+        "--out-filename",
+        default="demo/stdet/output.mp4",
         type=str,
-        help='the filename of output video')
+        help="the filename of output video",
+    )
     parser.add_argument(
-        '--show',
-        action='store_true',
-        help='Whether to show results with cv2.imshow')
+        "--show", action="store_true", help="Whether to show results with cv2.imshow"
+    )
     parser.add_argument(
-        '--display-height',
+        "--display-height",
         type=int,
         default=0,
-        help='Image height for human detector and draw frames.')
+        help="Image height for human detector and draw frames.",
+    )
     parser.add_argument(
-        '--display-width',
+        "--display-width",
         type=int,
         default=0,
-        help='Image width for human detector and draw frames.')
+        help="Image width for human detector and draw frames.",
+    )
     parser.add_argument(
-        '--predict-stepsize',
+        "--predict-stepsize",
         default=8,
         type=int,
-        help='give out a prediction per n frames')
+        help="give out a prediction per n frames",
+    )
     parser.add_argument(
-        '--clip-vis-length',
-        default=8,
-        type=int,
-        help='Number of draw frames per clip.')
+        "--clip-vis-length", default=8, type=int, help="Number of draw frames per clip."
+    )
     parser.add_argument(
-        '--cfg-options',
-        nargs='+',
+        "--cfg-options",
+        nargs="+",
         action=DictAction,
         default={},
-        help='override some settings in the used config, the key-value pair '
-        'in xxx=yyy format will be merged into config file. For example, '
-        "'--cfg-options model.backbone.depth=18 model.backbone.with_cp=True'")
+        help="override some settings in the used config, the key-value pair "
+        "in xxx=yyy format will be merged into config file. For example, "
+        "'--cfg-options model.backbone.depth=18 model.backbone.with_cp=True'",
+    )
 
     args = parser.parse_args()
     return args
@@ -197,7 +208,8 @@ class TaskInfo:
             return_loss=False,
             img=[input_tensor],
             proposals=[[self.stdet_bboxes]],
-            img_metas=[[dict(img_shape=self.img_shape)]])
+            img_metas=[[dict(img_shape=self.img_shape)]],
+        )
 
 
 class BaseHumanDetector(metaclass=ABCMeta):
@@ -279,8 +291,8 @@ class StdetPredictor:
 
         # load model
         config.model.backbone.pretrained = None
-        model = build_detector(config.model, test_cfg=config.get('test_cfg'))
-        load_checkpoint(model, checkpoint, map_location='cpu')
+        model = build_detector(config.model, test_cfg=config.get("test_cfg"))
+        load_checkpoint(model, checkpoint, map_location="cpu")
         model.to(device)
         model.eval()
         self.model = model
@@ -289,14 +301,13 @@ class StdetPredictor:
         # init label map, aka class_id to class_name dict
         with open(label_map_path) as f:
             lines = f.readlines()
-        lines = [x.strip().split(': ') for x in lines]
+        lines = [x.strip().split(": ") for x in lines]
         self.label_map = {int(x[0]): x[1] for x in lines}
         try:
-            if config['data']['train']['custom_classes'] is not None:
+            if config["data"]["train"]["custom_classes"] is not None:
                 self.label_map = {
                     id + 1: self.label_map[cls]
-                    for id, cls in enumerate(config['data']['train']
-                                             ['custom_classes'])
+                    for id, cls in enumerate(config["data"]["train"]["custom_classes"])
                 }
         except KeyError:
             pass
@@ -319,8 +330,9 @@ class StdetPredictor:
                 continue
             for bbox_id in range(task.stdet_bboxes.shape[0]):
                 if result[class_id][bbox_id, 4] > self.score_thr:
-                    preds[bbox_id].append((self.label_map[class_id + 1],
-                                           result[class_id][bbox_id, 4]))
+                    preds[bbox_id].append(
+                        (self.label_map[class_id + 1], result[class_id][bbox_id, 4])
+                    )
 
         # update task
         # `preds` is `list[list[tuple]]`. The outer brackets indicate
@@ -330,36 +342,33 @@ class StdetPredictor:
 
         return task
 
-    
-
 
 class ClipHelper:
     """Multithrading utils to manage the lifecycle of task."""
 
-    def __init__(self,
-                 config,
-                 display_height=0,
-                 display_width=0,
-                 input_video=best.url,
-                 predict_stepsize=40,
-                 output_fps=25,
-                 clip_vis_length=8,
-                 out_filename='demo/output.mp4',
-                 show=True,
-                 stdet_input_shortside=256):
+    def __init__(
+        self,
+        config,
+        display_height=0,
+        display_width=0,
+        input_video=best.url,
+        predict_stepsize=40,
+        output_fps=25,
+        clip_vis_length=8,
+        out_filename="demo/output.mp4",
+        show=True,
+        stdet_input_shortside=256,
+    ):
         self.cnt = 0
         # stdet sampling strategy
         val_pipeline = config.data.val.pipeline
-        sampler = [x for x in val_pipeline
-                   if x['type'] == 'SampleAVAFrames'][0]
-        clip_len, frame_interval = sampler['clip_len'], sampler[
-            'frame_interval']
+        sampler = [x for x in val_pipeline if x["type"] == "SampleAVAFrames"][0]
+        clip_len, frame_interval = sampler["clip_len"], sampler["frame_interval"]
         self.window_size = clip_len * frame_interval
 
         # asserts
-        assert (out_filename or show), \
-            'out_filename and show cannot both be None'
-        assert clip_len % 2 == 0, 'We would like to have an even clip_len'
+        assert out_filename or show, "out_filename and show cannot both be None"
+        assert clip_len % 2 == 0, "We would like to have an even clip_len"
         assert clip_vis_length <= predict_stepsize
         assert 0 < predict_stepsize <= self.window_size
 
@@ -368,19 +377,19 @@ class ClipHelper:
         self.cap = cv2.VideoCapture(input_video)
         self.webcam = False
         assert self.cap.isOpened()
-        
 
         # stdet input preprocessing params
         h = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         w = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.stdet_input_size = mmcv.rescale_size(
-            (w, h), (stdet_input_shortside, np.Inf))
-        img_norm_cfg = config['img_norm_cfg']
-        if 'to_rgb' not in img_norm_cfg and 'to_bgr' in img_norm_cfg:
-            to_bgr = img_norm_cfg.pop('to_bgr')
-            img_norm_cfg['to_rgb'] = to_bgr
-        img_norm_cfg['mean'] = np.array(img_norm_cfg['mean'])
-        img_norm_cfg['std'] = np.array(img_norm_cfg['std'])
+            (w, h), (stdet_input_shortside, np.Inf)
+        )
+        img_norm_cfg = config["img_norm_cfg"]
+        if "to_rgb" not in img_norm_cfg and "to_bgr" in img_norm_cfg:
+            to_bgr = img_norm_cfg.pop("to_bgr")
+            img_norm_cfg["to_rgb"] = to_bgr
+        img_norm_cfg["mean"] = np.array(img_norm_cfg["mean"])
+        img_norm_cfg["std"] = np.array(img_norm_cfg["std"])
         self.img_norm_cfg = img_norm_cfg
 
         # task init params
@@ -388,9 +397,7 @@ class ClipHelper:
         self.predict_stepsize = predict_stepsize
         self.buffer_size = self.window_size - self.predict_stepsize
         frame_start = self.window_size // 2 - (clip_len // 2) * frame_interval
-        self.frames_inds = [
-            frame_start + frame_interval * i for i in range(clip_len)
-        ]
+        self.frames_inds = [frame_start + frame_interval * i for i in range(clip_len)]
         self.buffer = []
         self.processed_buffer = []
 
@@ -399,11 +406,13 @@ class ClipHelper:
             self.display_size = (display_width, display_height)
         elif display_height > 0 or display_width > 0:
             self.display_size = mmcv.rescale_size(
-                (w, h), (np.Inf, max(display_height, display_width)))
+                (w, h), (np.Inf, max(display_height, display_width))
+            )
         else:
             self.display_size = (w, h)
         self.ratio = tuple(
-            n / o for n, o in zip(self.stdet_input_size, self.display_size))
+            n / o for n, o in zip(self.stdet_input_size, self.display_size)
+        )
         if output_fps <= 0:
             self.output_fps = int(self.cap.get(cv2.CAP_PROP_FPS))
         else:
@@ -475,16 +484,16 @@ class ClipHelper:
                     if was_read:
                         frames.append(mmcv.imresize(frame, self.display_size))
                         processed_frame = mmcv.imresize(
-                            frame, self.stdet_input_size).astype(np.float32)
-                        _ = mmcv.imnormalize_(processed_frame,
-                                              **self.img_norm_cfg)
+                            frame, self.stdet_input_size
+                        ).astype(np.float32)
+                        _ = mmcv.imnormalize_(processed_frame, **self.img_norm_cfg)
                         processed_frames.append(processed_frame)
             task.add_frames(self.read_id + 1, frames, processed_frames)
 
             # update buffer
             if was_read:
-                self.buffer = frames[-self.buffer_size:]
-                self.processed_buffer = processed_frames[-self.buffer_size:]
+                self.buffer = frames[-self.buffer_size :]
+                self.processed_buffer = processed_frames[-self.buffer_size :]
 
             # update read state
             with self.read_id_lock:
@@ -494,8 +503,9 @@ class ClipHelper:
             self.read_queue.put((was_read, copy.deepcopy(task)))
             cur_time = time.time()
             logger.debug(
-                f'Read thread: {1000*(cur_time - start_time):.0f} ms, '
-                f'{read_frame_cnt / (cur_time - before_read):.0f} fps')
+                f"Read thread: {1000*(cur_time - start_time):.0f} ms, "
+                f"{read_frame_cnt / (cur_time - before_read):.0f} fps"
+            )
             start_time = cur_time
 
     def display_fn(self):
@@ -516,8 +526,10 @@ class ClipHelper:
                     break
 
                 # If the next task are not available, wait.
-                if (len(self.display_queue) == 0 or
-                        self.display_queue.get(self.display_id + 1) is None):
+                if (
+                    len(self.display_queue) == 0
+                    or self.display_queue.get(self.display_id + 1) is None
+                ):
                     time.sleep(0.02)
                     continue
 
@@ -534,23 +546,23 @@ class ClipHelper:
                     cur_display_inds = range(self.display_inds[-1] + 1)
                 elif not was_read:
                     # the last task
-                    cur_display_inds = range(self.display_inds[0],
-                                             len(task.frames))
+                    cur_display_inds = range(self.display_inds[0], len(task.frames))
                 else:
                     cur_display_inds = self.display_inds
 
                 for frame_id in cur_display_inds:
                     frame = task.frames[frame_id]
                     if self.show:
-                        cv2.imshow('Demo', frame)
+                        cv2.imshow("Demo", frame)
                         cv2.waitKey(int(1000 / self.output_fps))
                     if self.video_writer:
                         self.video_writer.write(frame)
 
             cur_time = time.time()
             logger.debug(
-                f'Display thread: {1000*(cur_time - start_time):.0f} ms, '
-                f'read id {read_id}, display id {display_id}')
+                f"Display thread: {1000*(cur_time - start_time):.0f} ms, "
+                f"read id {read_id}, display id {display_id}"
+            )
             start_time = cur_time
 
     def __iter__(self):
@@ -582,13 +594,12 @@ class ClipHelper:
     def start(self):
         """Start read thread and display thread."""
         self.read_thread = threading.Thread(
-            target=self.read_fn, args=(), name='VidRead-Thread', daemon=True)
+            target=self.read_fn, args=(), name="VidRead-Thread", daemon=True
+        )
         self.read_thread.start()
         self.display_thread = threading.Thread(
-            target=self.display_fn,
-            args=(),
-            name='VidDisplay-Thread',
-            daemon=True)
+            target=self.display_fn, args=(), name="VidDisplay-Thread", daemon=True
+        )
         self.display_thread.start()
 
         return self
@@ -620,18 +631,18 @@ class ClipHelper:
         with self.display_lock:
             self.display_queue[task.id] = (True, task)
 
-    
     def detect(self, task):
-        if(task.action_preds is not None):
-            for i in task.action_preds :
-                if(len(i)!=0):
+        if task.action_preds is not None:
+            for i in task.action_preds:
+                if len(i) != 0:
                     self.cnt += 1
 
     def detect_drowning(self, task):
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.detect(task)
-        if(self.cnt != 0 and self.cnt % 9 == 0):
-            cv2.imwrite("./capture/"+str(now)+".jpg", task.frames[self.display_inds[0]])
+        if self.cnt != 0 and self.cnt % 9 == 0:
+            # cv2.imwrite("./static/"+str(now)+".jpg", task.frames[self.display_inds[0]])
+            cv2.imwrite("./static/drowning.jpg", task.frames[self.display_inds[0]])
             self.cnt = 0
 
     def get_output_video_writer(self, path):
@@ -642,10 +653,11 @@ class ClipHelper:
         """
         return cv2.VideoWriter(
             filename=path,
-            fourcc=cv2.VideoWriter_fourcc(*'mp4v'),
+            fourcc=cv2.VideoWriter_fourcc(*"mp4v"),
             fps=float(self.output_fps),
             frameSize=self.display_size,
-            isColor=True)
+            isColor=True,
+        )
 
 
 class BaseVisualizer(metaclass=ABCMeta):
@@ -663,11 +675,12 @@ class BaseVisualizer(metaclass=ABCMeta):
         keyframe_idx = len(task.frames) // 2
         draw_range = [
             keyframe_idx - task.clip_vis_length // 2,
-            keyframe_idx + (task.clip_vis_length - 1) // 2
+            keyframe_idx + (task.clip_vis_length - 1) // 2,
         ]
         assert draw_range[0] >= 0 and draw_range[1] < len(task.frames)
-        task.frames = self.draw_clip_range(task.frames, task.action_preds,
-                                           bboxes, draw_range)
+        task.frames = self.draw_clip_range(
+            task.frames, task.action_preds, bboxes, draw_range
+        )
 
         return task
 
@@ -678,9 +691,9 @@ class BaseVisualizer(metaclass=ABCMeta):
             return frames
 
         # draw frames in `draw_range`
-        left_frames = frames[:draw_range[0]]
-        right_frames = frames[draw_range[1] + 1:]
-        draw_frames = frames[draw_range[0]:draw_range[1] + 1]
+        left_frames = frames[: draw_range[0]]
+        right_frames = frames[draw_range[1] + 1 :]
+        draw_frames = frames[draw_range[0] : draw_range[1] + 1]
 
         # get labels(texts) and draw predictions
         draw_frames = [
@@ -699,9 +712,9 @@ class BaseVisualizer(metaclass=ABCMeta):
 
         'take (an object) from (a person)' -> 'take ... from ...'
         """
-        while name.find('(') != -1:
-            st, ed = name.find('('), name.find(')')
-            name = name[:st] + '...' + name[ed + 1:]
+        while name.find("(") != -1:
+            st, ed = name.find("("), name.find(")")
+            name = name[:st] + "..." + name[ed + 1 :]
         return name
 
 
@@ -729,14 +742,15 @@ class DefaultVisualizer(BaseVisualizer):
     """
 
     def __init__(
-            self,
-            max_labels_per_bbox=5,
-            plate='03045e-023e8a-0077b6-0096c7-00b4d8-48cae4',
-            text_fontface=cv2.FONT_HERSHEY_DUPLEX,
-            text_fontscale=0.5,
-            text_fontcolor=(255, 255, 255),  # white
-            text_thickness=1,
-            text_linetype=1):
+        self,
+        max_labels_per_bbox=5,
+        plate="03045e-023e8a-0077b6-0096c7-00b4d8-48cae4",
+        text_fontface=cv2.FONT_HERSHEY_DUPLEX,
+        text_fontscale=0.5,
+        text_fontcolor=(255, 255, 255),  # white
+        text_thickness=1,
+        text_linetype=1,
+    ):
         super().__init__(max_labels_per_bbox=max_labels_per_bbox)
         self.text_fontface = text_fontface
         self.text_fontscale = text_fontscale
@@ -748,7 +762,7 @@ class DefaultVisualizer(BaseVisualizer):
             """Convert the 6-digit hex string to tuple of 3 int value (RGB)"""
             return (int(h[:2], 16), int(h[2:4], 16), int(h[4:], 16))
 
-        plate = plate.split('-')
+        plate = plate.split("-")
         self.plate = [hex2color(h) for h in plate]
 
     def draw_one_image(self, frame, bboxes, preds):
@@ -763,26 +777,34 @@ class DefaultVisualizer(BaseVisualizer):
             for k, (label, score) in enumerate(pred):
                 if k >= self.max_labels_per_bbox:
                     break
-                text = f'{self.abbrev(label)}: {score:.4f}'
+                text = f"{self.abbrev(label)}: {score:.4f}"
                 location = (0 + st[0], 18 + k * 18 + st[1])
-                textsize = cv2.getTextSize(text, self.text_fontface,
-                                           self.text_fontscale,
-                                           self.text_thickness)[0]
+                textsize = cv2.getTextSize(
+                    text, self.text_fontface, self.text_fontscale, self.text_thickness
+                )[0]
                 textwidth = textsize[0]
                 diag0 = (location[0] + textwidth, location[1] - 14)
                 diag1 = (location[0], location[1] + 2)
                 cv2.rectangle(frame, diag0, diag1, self.plate[k + 1], -1)
-                cv2.putText(frame, text, location, self.text_fontface,
-                            self.text_fontscale, self.text_fontcolor,
-                            self.text_thickness, self.text_linetype)
+                cv2.putText(
+                    frame,
+                    text,
+                    location,
+                    self.text_fontface,
+                    self.text_fontscale,
+                    self.text_fontcolor,
+                    self.text_thickness,
+                    self.text_linetype,
+                )
 
         return frame
 
 
 def main(args):
     # init human detector
-    human_detector = MmdetHumanDetector(args.det_config, args.det_checkpoint,
-                                        args.device, args.det_score_thr)
+    human_detector = MmdetHumanDetector(
+        args.det_config, args.det_checkpoint, args.device, args.det_score_thr
+    )
 
     # init action detector
     config = Config.fromfile(args.config)
@@ -791,7 +813,7 @@ def main(args):
     try:
         # In our spatiotemporal detection demo, different actions should have
         # the same number of bboxes.
-        config['model']['test_cfg']['rcnn']['action_thr'] = .0
+        config["model"]["test_cfg"]["rcnn"]["action_thr"] = 0.0
     except KeyError:
         pass
     stdet_predictor = StdetPredictor(
@@ -799,7 +821,8 @@ def main(args):
         checkpoint=args.checkpoint,
         device=args.device,
         score_thr=args.action_score_thr,
-        label_map_path=args.label_map)
+        label_map_path=args.label_map,
+    )
 
     # init clip helper
     clip_helper = ClipHelper(
@@ -811,7 +834,8 @@ def main(args):
         output_fps=args.output_fps,
         clip_vis_length=args.clip_vis_length,
         out_filename=args.out_filename,
-        show=args.show)
+        show=args.show,
+    )
 
     # init visualizer
     vis = DefaultVisualizer()
@@ -847,7 +871,7 @@ def main(args):
 
             # draw stdet predictions in raw frames
             vis.draw_predictions(task)
-            logger.info(f'Stdet Results: {task.action_preds}')
+            logger.info(f"Stdet Results: {task.action_preds}")
 
             # add draw frames to display queue
             clip_helper.display(task)
@@ -855,8 +879,10 @@ def main(args):
             # detect drawning frame
             clip_helper.detect_drowning(task)
 
-            logger.debug('Main thread inference time '
-                         f'{1000*(time.time() - inference_start):.0f} ms')
+            logger.debug(
+                "Main thread inference time "
+                f"{1000*(time.time() - inference_start):.0f} ms"
+            )
 
         # wait for display thread
         clip_helper.join()
@@ -867,5 +893,5 @@ def main(args):
         clip_helper.clean()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(parse_args())
