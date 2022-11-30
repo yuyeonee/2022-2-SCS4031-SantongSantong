@@ -834,7 +834,7 @@ def main(args):
     checkpoints = [file for file in os.listdir(args.checkpoints)]
     config = Config.fromfile(os.path.join(args.configs, configs[0]))
     config.merge_from_dict(args.cfg_options)
-    
+
     stdet_predictor1 = build_model(args, 1, config, checkpoints)
     stdet_predictor2 = build_model(args, 2, config, checkpoints)
     stdet_predictor3 = build_model(args, 3, config, checkpoints)
@@ -888,10 +888,36 @@ def main(args):
             inference_start = time.time()
 
             # get human bboxes
-            human_detector.predict(task)
+            human_detector.predict(task)  # [[사람1 bbox], [사람2 bbox], ...]
 
             # get stdet predictions
-            stdet_predictor.predict(task)
+            # stdet_predictor.predict(task)  # 모델 하나일 때
+            task1 = stdet_predictor1.predict(task)  # task1.action_preds = [ [사람1에 대해서 (액션, 스코어), (액션, 스코어)], [사람2에 대해서 (액션, 스코어)], ... ]
+            task2 = stdet_predictor2.predict(task)  # task2.action_preds = [ [사람1에 대해서 (액션, 스코어), (액션, 스코어)], [사람2에 대해서 (액션, 스코어)], ... ]
+            task3 = stdet_predictor3.predict(task)  # task3.action_preds = [ [사람1에 대해서 (액션, 스코어), (액션, 스코어)], [사람2에 대해서 (액션, 스코어)], ... ]
+            task4 = stdet_predictor4.predict(task)  # task4.action_preds = [ [사람1에 대해서 (액션, 스코어), (액션, 스코어)], [사람2에 대해서 (액션, 스코어)], ... ]
+            task5 = stdet_predictor5.predict(task)  # task5.action_preds = [ [사람1에 대해서 (액션, 스코어), (액션, 스코어)], [사람2에 대해서 (액션, 스코어)], ... ]
+            
+            # 각 모델 결과 voting -> task.action_preds 업데이트
+            preds = [list() for _ in task.stdet_bboxes]  # 사람 객체만큼의 빈 리스트로 이루어진 리스트 [[], [], ...] 
+            for idx, bbox in enumerate(preds):
+                result = {'drowning': 0, 'swimming': 0}
+                # result = {'drowning': 0}
+                preds[idx] = task1.action_preds[idx] + task2.action_preds[idx] + task3.action_preds[idx] + task4.action_preds[idx] + task5.action_preds[idx]
+                    # ex. [[('swimming', 0.988), ('drowning', 0.38), ('swimming', 0.83), ('drowning', 0.56), ('swimming', 0.967)], 
+                    #      [('swimming', 0.988), ('swimming', 0.988), ('swimming', 0.998), ('drowning', 0.23)], ...]
+                for tup in preds[idx]:
+                    result[tup[0]] += tup[1]
+                result['drowning'] /= 5
+                result['swimming'] /= 5
+                    # preds : [[('drowning', 0.94), ('swimming', 2.785)], [('drowning', 0.23), ('swimming', 2.974)], ...]
+                del result['swimming']
+                if result['drowning'] < args.action_score_thr:
+                    del result['drowning']
+                result = list(result.items())     
+                preds[idx] = result       
+            preds = [pred for pred in preds if len(pred)>0]
+            task.action_preds = preds  # task.add_action_preds(preds)
 
             # draw stdet predictions in raw frames
             vis.draw_predictions(task)
