@@ -808,6 +808,19 @@ class DefaultVisualizer(BaseVisualizer):
         return frame
 
 
+def build_model(args, idx, config, ckpts):
+    # config=configs[idx-1]  ## config가 배열일 때(모델마다 각각 config 만들어줄 때)
+    stdet_predictor = StdetPredictor(
+        config=config,
+        checkpoint=os.path.join(args.checkpoints, ckpts[idx-1]),
+        device=args.device,
+        score_thr=args.action_score_thr,
+        label_map_path=args.label_map)
+
+    # return config, stdet_predictor
+    return stdet_predictor
+
+
 def main(args):
     # init human detector
     human_detector = MmdetHumanDetector(
@@ -815,8 +828,18 @@ def main(args):
     )
 
     # init action detector
-    config = Config.fromfile(args.config)
+    # config = Config.fromfile(args.config)
+    # config.merge_from_dict(args.cfg_options)
+    configs = [file for file in os.listdir(args.configs)]
+    checkpoints = [file for file in os.listdir(args.checkpoints)]
+    config = Config.fromfile(os.path.join(args.configs, configs[0]))
     config.merge_from_dict(args.cfg_options)
+    
+    stdet_predictor1 = build_model(args, 1, config, checkpoints)
+    stdet_predictor2 = build_model(args, 2, config, checkpoints)
+    stdet_predictor3 = build_model(args, 3, config, checkpoints)
+    stdet_predictor4 = build_model(args, 4, config, checkpoints)
+    stdet_predictor5 = build_model(args, 5, config, checkpoints)
 
     try:
         # In our spatiotemporal detection demo, different actions should have
@@ -824,13 +847,6 @@ def main(args):
         config["model"]["test_cfg"]["rcnn"]["action_thr"] = 0.0
     except KeyError:
         pass
-    stdet_predictor = StdetPredictor(
-        config=config,
-        checkpoint=args.checkpoint,
-        device=args.device,
-        score_thr=args.action_score_thr,
-        label_map_path=args.label_map,
-    )
 
     # init clip helper
     clip_helper = ClipHelper(
