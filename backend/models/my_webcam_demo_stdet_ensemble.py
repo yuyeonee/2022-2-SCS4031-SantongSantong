@@ -916,7 +916,7 @@ def main(args):
                     del result['drowning']
                 result = list(result.items())     
                 preds[idx] = result       
-            preds = [pred for pred in preds if len(pred)>0]
+            preds = [pred for pred in preds if len(pred)>0]  # 행동 탐지 안 된 사람은 박스 그리지 않도록
             task.action_preds = preds  # task.add_action_preds(preds)
 
             # draw stdet predictions in raw frames
